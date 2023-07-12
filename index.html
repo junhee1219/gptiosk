@@ -5,11 +5,20 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
         <title>Mobile Chat</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-        <link rel="stylesheet" href="style.css?v=1.023">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="style.css?v=1.024">
       </head>
       <body>
   <div class="container">
+    
     <div class="chat-container">
+        <div class="btn-toolbar">
+            <div class="btn-group ml-auto">
+              <button id="reset-button" type="button" class="btn btn-default">
+                <i class="fa fa-refresh"></i>
+              </button>
+            </div>
+          </div>
       <div class="chat-header">Chat</div>
       <div class="chat-messages" id="chat-messages"></div>
       <div class="chat-input">
@@ -20,6 +29,6 @@
   </div>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="script.js?v=1.02"></script>
+  <script src="script.js?v=1.021"></script>
 </body>
 </html>

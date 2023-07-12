@@ -4,6 +4,15 @@ var lastMsg ="";
 var contents = [];
 
 $(document).ready(function () {
+    $("#reset-button").click(function() {
+        $("#chat-messages").empty();
+        $(".chat-header").empty();
+        $(".chat-header").append("Chat");
+        contents = [];
+        lastMsg = "직원 : 안녕하세요. Ri카페입니다. 무엇을 도와 드릴까요?"
+        $("#chat-messages").append(lastMsg); // 메세지 채팅창에 보이기
+      });
+
     lastMsg = "직원 : 안녕하세요. Ri카페입니다. 무엇을 도와 드릴까요?"
     $("#chat-messages").append(lastMsg); // 메세지 채팅창에 보이기
   // 엔터키 입력했을때 send-button 클릭이벤트
