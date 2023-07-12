@@ -82,7 +82,7 @@ function search(keywords, callback) {
     reqStr += "4. 결제수단 선택 (예시 : 카드, 현금, 카카오페이, 만원, 오천원 등)\n"
     reqStr += "5. 테이크아웃/매장식사 여부 (예시 : 매장식사, 테이크아웃, 먹고감 등)\n"
     
-    const API_KEY = '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';
+    const API_KEY = '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';
     var config = {
         headers: {
         Authorization: `Bearer ${API_KEY}`,
