@@ -10,7 +10,7 @@
     width: 90%;
     border: 1px solid #ccc;
     border-radius: 5px;
-    position: fixed;
+    position: absolute;
     top: 10px;
   }
   
