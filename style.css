@@ -11,7 +11,7 @@
     border: 1px solid #ccc;
     border-radius: 5px;
     position: fixed;
-    top: 1vh;
+    top: 10px;
   }
   
   .chat-header {
@@ -66,3 +66,4 @@
     overflow-y: scroll;
     scroll-behavior: smooth;
   }
+
