@@ -78,20 +78,20 @@ function search(keywords, callback) {
     API_KEY += "VSYTnt9wDHA3vDHgU4v";
 
     reqStr = "ㄱ. N/A\n";
-    reqStr += "ㄴ. menu confirmed (Example: Iced Americano, Strawberry Latte, Matcha Frappuccino, Cheesecake, etc.)\n";
-    reqStr += "ㄷ. size confirmed (Example: Tall, Tall size, Grande, Venti, Venti size, etc.)\n";
-    reqStr += "ㄹ. Payment method confirmation (Example: card, cash, Kakao Pay, 10,000 won, 5,000 won, etc.)\n";
-    reqStr += "ㅁ. Confirmation of for here or to go (Example: store meals, takeout, eat-in, etc.)\n";
-    reqStr += "ㅂ. Questions or requests to the clerk (e.g.: Can you recommend a menu?, what size do you have?, What time is it open here, etc.)\n";
+    reqStr += "ㄴ. Menu decision (Example: Iced Americano, Strawberry Latte, Matcha Frappuccino, Cheesecake, etc.)\n";
+    reqStr += "ㄷ. Size decision(Example: Tall, Tall size, Grande, Venti, Venti size, etc.)\n";
+    reqStr += "ㄹ. Decide payment method (Example: card, cash, Kakao Pay, 10,000 won, 5,000 won, etc.)\n";
+    reqStr += "ㅁ. Decide for here or to go (Example: store meals, takeout, eat-in, etc.)\n";
+    reqStr += "ㅂ. Ask or request to the clerk (e.g.: Can you recommend a menu?, what size do you have?, What time is it open here, etc.)\n";
     reqStr += "The conversation below is a conversation between a customer and an employee at a cafe. \n";
-    reqStr += "Choose all the correct answers from the examples above to indicate what the customer intended.\n";
-    reqStr += "Answer ㄱ or ㅂ for simple queries or just speaking on a related topic.\n";
+    reqStr += "Choose all the correct answers from the above choices to indicate what the customer decided.\n";
+    reqStr += "Answer ㄱ or ㅂ if customer simply asked something or just told on a related topic.\n";
     reqStr += "Don't say anything about irrelevant things.\n";
     reqStr += "======== 대화내용 =========\n";
     reqStr += lastMsg + "\n";
     reqStr += "손님 : " + keywords + "\n";
     reqStr += "===========================\n";
-    reqStr += "정답 : ";
+    reqStr += "Answer : ";
 
 
   var config = {
