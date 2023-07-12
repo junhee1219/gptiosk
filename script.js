@@ -72,34 +72,27 @@ function addBadge(cls, content) {
 }
 
 function search(keywords, callback) {
-  reqStr = "A N/A\n";
-  reqStr +=
-    "B menu confirmed (Example: Iced Americano, Strawberry Latte, Matcha Frappuccino, Cheesecake, etc.)\n";
-  reqStr +=
-    "C size confirmed (Example: Tall, Tall size, Grande, Venti, Venti size, etc.)\n";
-  reqStr +=
-    "D Payment method confirmation (Example: card, cash, Kakao Pay, 10,000 won, 5,000 won, etc.)\n";
-  reqStr +=
-    "F Questions or requests to the clerk (e.g.: Can you recommend a menu?, what size do you have?, What time is it open here, etc.)\n";
-  reqStr +=
-    "F 점원에게 질문 혹은 요청(예시 : 메뉴 추천해줘, 어떤 사이즈가 있어?, 여기 몇시까지 하나요 등)\n";
-  reqStr +=
-    "The conversation below is a conversation between a customer and an employee at a cafe. \n";
-  reqStr +=
-    "Choose all the correct answers from the examples above to indicate what the customer intended.\n";
-  reqStr +=
-    "Answer A or F for simple queries or just speaking on a related topic.\n";
-  reqStr += "Don't say anything about irrelevant things.\n";
-  reqStr += "======== 대화내용 =========\n";
-  reqStr += lastMsg + "\n";
-  reqStr += "손님 : " + keywords + "\n";
-  reqStr += "===========================\n";
-  reqStr += "answer : ";
+    API_KEY = "sk-wzWR5Z";
+    API_KEY += "bfFqw1CT7";
+    API_KEY += "gdKBOT3BlbkFJo";
+    API_KEY += "VSYTnt9wDHA3vDHgU4v";
 
-  API_KEY = "sk-wzWR5Z";
-  API_KEY += "bfFqw1CT7";
-  API_KEY += "gdKBOT3BlbkFJo";
-  API_KEY += "VSYTnt9wDHA3vDHgU4v";
+    reqStr = "A N/A\n";
+    reqStr += "B menu confirmed (Example: Iced Americano, Strawberry Latte, Matcha Frappuccino, Cheesecake, etc.)\n";
+    reqStr += "C size confirmed (Example: Tall, Tall size, Grande, Venti, Venti size, etc.)\n";
+    reqStr += "D Payment method confirmation (Example: card, cash, Kakao Pay, 10,000 won, 5,000 won, etc.)\n";
+    reqStr +="F Questions or requests to the clerk (e.g.: Can you recommend a menu?, what size do you have?, What time is it open here, etc.)\n";
+    reqStr += "The conversation below is a conversation between a customer and an employee at a cafe. \n";
+    reqStr += "Choose all the correct answers from the examples above to indicate what the customer intended.\n";
+    reqStr += "Answer A or F for simple queries or just speaking on a related topic.\n";
+    reqStr += "Don't say anything about irrelevant things.\n";
+    reqStr += "======== 대화내용 =========\n";
+    reqStr += lastMsg + "\n";
+    reqStr += "손님 : " + keywords + "\n";
+    reqStr += "===========================\n";
+    reqStr += "answer : ";
+
+
   var config = {
     headers: {
       Authorization: `Bearer ${API_KEY}`,
