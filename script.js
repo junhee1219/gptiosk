@@ -4,6 +4,17 @@ var lastMsg = "";
 var contents = [];
 
 $(document).ready(function () {
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", "data.json", true);
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+      var json = JSON.parse(xhr.responseText);
+      // JSON 파일 로드 완료 후 수행할 작업
+      console.log(json);
+    }
+  };
+  xhr.send();
+
   $("#reset-button").click(function () {
     $("#chat-messages").empty();
     $(".chat-header").empty();
@@ -72,27 +83,34 @@ function addBadge(cls, content) {
 }
 
 function search(keywords, callback) {
-    API_KEY = "sk-wzWR5Z";
-    API_KEY += "bfFqw1CT7";
-    API_KEY += "gdKBOT3BlbkFJo";
-    API_KEY += "VSYTnt9wDHA3vDHgU4v";
+  API_KEY = "sk-wzWR5Z";
+  API_KEY += "bfFqw1CT7";
+  API_KEY += "gdKBOT3BlbkFJo";
+  API_KEY += "VSYTnt9wDHA3vDHgU4v";
 
-    reqStr = "ㄱ. N/A\n";
-    reqStr += "ㄴ. Menu decision (e.g. Iced Americano, Strawberry Latte, Matcha Frappuccino, Cheesecake, etc.)\n";
-    reqStr += "ㄷ. Size decision (e.g. Tall, Tall size, Grande, Venti, Venti size, etc.)\n";
-    reqStr += "ㄹ. Decide payment method (e.g. card, cash, Kakao Pay, 10,000 won, 5,000 won, etc.)\n";
-    reqStr += "ㅁ. Decide for here or to go (e.g. to go, for here, eat-in, etc.)\n";
-    reqStr += "ㅂ. Ask or request to the clerk (e.g. Can you recommend a menu?, what size do you have?, What time is it open here, etc.)\n";
-    reqStr += "The conversation below is a conversation between a customer and an employee at a cafe. \n";
-    reqStr += "Choose all the correct answers from the above choices to indicate what the customer decided.\n";
-    reqStr += "Answer ㄱ or ㅂ if customer simply asked something or just told on a related topic.\n";
-    reqStr += "Don't say anything about irrelevant things.\n";
-    reqStr += "======== 대화내용 =========\n";
-    reqStr += lastMsg + "\n";
-    reqStr += "손님 : " + keywords + "\n";
-    reqStr += "===========================\n";
-    reqStr += "Answer : ";
-
+  reqStr = "ㄱ. N/A\n";
+  reqStr +=
+    "ㄴ. Menu decision (e.g. Iced Americano, Strawberry Latte, Matcha Frappuccino, Cheesecake, etc.)\n";
+  reqStr +=
+    "ㄷ. Size decision (e.g. Tall, Tall size, Grande, Venti, Venti size, etc.)\n";
+  reqStr +=
+    "ㄹ. Decide payment method (e.g. card, cash, Kakao Pay, 10,000 won, 5,000 won, etc.)\n";
+  reqStr +=
+    "ㅁ. Decide for here or to go (e.g. to go, for here, eat-in, etc.)\n";
+  reqStr +=
+    "ㅂ. Ask or request to the clerk (e.g. Can you recommend a menu?, what size do you have?, What time is it open here, etc.)\n";
+  reqStr +=
+    "The conversation below is a conversation between a customer and an employee at a cafe. \n";
+  reqStr +=
+    "Choose all the correct answers from the above choices to indicate what the customer decided.\n";
+  reqStr +=
+    "Answer ㄱ or ㅂ if customer simply asked something or just told on a related topic.\n";
+  reqStr += "Don't say anything about irrelevant things.\n";
+  reqStr += "======== 대화내용 =========\n";
+  reqStr += lastMsg + "\n";
+  reqStr += "손님 : " + keywords + "\n";
+  reqStr += "===========================\n";
+  reqStr += "Answer : ";
 
   var config = {
     headers: {
