@@ -6,6 +6,7 @@ var recentCustomer = '';
 let menuData;
 var xhr = new XMLHttpRequest();
 var menuList;
+var askContent;
 
 let API_KEY = "sk-wzWR5Z";
 API_KEY += "bfFqw1CT7";
@@ -19,6 +20,7 @@ var config = {
 };
 
 const checkString = (str, listdata) => {
+    console.log(str,listdata)
     for (let i = 0; i < listdata.length; i++) {
         if (str.includes(listdata[i])) {
             return listdata[i];
@@ -91,11 +93,16 @@ const handleAPIResponse = async (response) => {
         deciMenu = checkString(getResult, menuList)
         console.log(deciMenu);
         if (deciMenu != false){
-            addBadge("", "메뉴선택 : "+deciMenu);
+            addBadge("", "메뉴선택");
+            addBadge("",deciMenu)
+            askContent = "";
+        } 
+        else{
+            askContent = JSON.stringify(menuList);
+            askContent += "You said that the customer ordered "+deciMenu
+            +", but there is no such menu. Serve customers by referring to the above menu board "
         }
-        
     }
-
     if (response.includes("ㄷ")) {
         addBadge("", "사이즈");
     }
@@ -107,6 +114,7 @@ const handleAPIResponse = async (response) => {
     if (response.includes("ㅁ")) {
         addBadge("", "테이크아웃여부");
     }
+    StaffRespond();
 }
 
 function addBadge(cls, content) {
@@ -118,6 +126,7 @@ function addBadge(cls, content) {
             $("." + cls).append('<div class="badge">' + content + "</div>");
         }
     }
+    
 }
 
 const getGpt = async (keyword) => {
@@ -134,16 +143,15 @@ const getGpt = async (keyword) => {
         messages: messages,
     };
 
-    axios
-        .post("https://api.openai.com/v1/chat/completions", data, config) // POST 요청
-        .then(function (response) {
-            result = response.data.choices[0].message.content
-            console.log(result);
-            return result;
-        })
-        .catch(function (error) {
-            console.error(error);
-        });
+    try {
+        const response = await axios.post("https://api.openai.com/v1/chat/completions", data, config);
+        const result = response.data.choices[0].message.content;
+        console.log(result);
+        return result;
+    } catch (error) {
+        console.error(error);
+        return null; // 또는 오류 처리 방식에 맞게 처리합니다.
+    }
 }
 
 function search() {
@@ -191,7 +199,7 @@ function search() {
             console.log(reqStr);
             console.log(response.data.choices[0].message.content);
             handleAPIResponse(response.data.choices[0].message.content);
-            StaffRespond();
+            
         })
         .catch(function (error) {
             console.error(error);
@@ -215,7 +223,7 @@ function StaffRespond() {
         nextAskContent = "결제수단";
     }
 
-    if (nextAskContent !== "") {
+    if (nextAskContent !== "" && askContent == "") {
         keywords += "The above is just a conversation between a cafe Staff and a customer.";
         keywords += "You should be a kind staff. And ask about" + nextAskContent + "to Customer by the language requested by the Customer.\n";
         keywords += "직원 : "
@@ -256,7 +264,50 @@ function StaffRespond() {
             .catch(function (error) {
                 console.error(error);
             });
-    } else {
+    } else if (askContent != ""){
+        keywords = askContent
+        keywords += "직원 : "
+        var messages = [
+            {
+                role: "system",
+                content: "you are a cafe Staff. Treat guests kindly.",
+            },
+            { role: "user", content: keywords },
+        ];
+        var data = {
+            model: "gpt-3.5-turbo",
+            temperature: 0.5,
+            messages: messages,
+        };
+        console.log(keywords);
+        axios.post("https://api.openai.com/v1/chat/completions", data, config) // POST 요청
+            .then(function (response) {
+                console.log(response.data.choices[0].message.content);
+                if (
+                    response.data.choices[0].message.content.indexOf("직원") != -1
+                ) {
+                    recentStaff = response.data.choices[0].message.content;
+                } else {
+                    recentStaff = "직원 : " + response.data.choices[0].message.content;
+                }
+                var index1 = recentStaff.indexOf("손님 :");
+                var index2 = recentStaff.indexOf("손님:");
+                if (index1 !== -1) {
+                    recentStaff = recentStaff.substring(0, index1);
+                }
+                if (index2 !== -1) {
+                    recentStaff = recentStaff.substring(0, index2);
+                }
+                $("#chat-messages").append(recentStaff); // 메세지 채팅창에 보이기
+                $("#chat-messages").scrollTop($("#chat-messages")[0].scrollHeight);
+            })
+            .catch(function (error) {
+                console.error(error);
+            });
+
+    }
+    
+    else {
         recentStaff = "직원 : 주문이 모두 완료되었습니다. 잠시만 기다려주세요!";
         $("#chat-messages").append(recentStaff);
         $("#chat-messages").scrollTop($("#chat-messages")[0].scrollHeight);
