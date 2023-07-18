@@ -18,14 +18,14 @@ var config = {
     },
 };
 
-const checkString = (str,listdata) => {
+const checkString = (str, listdata) => {
     for (let i = 0; i < listdata.length; i++) {
-      if (str.includes(listdata[i])) {
-        return str;
-      }
+        if (str.includes(listdata[i])) {
+            return str;
+        }
     }
     return false;
-  };
+};
 
 xhr.open("GET", "data.json", true);
 xhr.onreadystatechange = function () {
@@ -81,8 +81,21 @@ $(document).ready(function () {
 });
 
 function handleAPIResponse(response) {
+    var question = recentStaff + "\n" + recentCustomer;
+
+
+
     if (response.includes("ㄴ")) {
-        addBadge("", "메뉴선택");
+        question += "\n위 대화를 보고 다음 보기 중 손님이 고른 메뉴를 고르시오\n";
+        question += JSON.stringify(menuList);
+        question += "\n answer : "
+        console.log(question)
+        deciMenu = checkString(getGpt(question), menuList)
+        console.log(deciMenu);
+        if (deciMenu != false){
+            addBadge("", "메뉴선택 : "+deciMenu);
+        }
+        
     }
 
     if (response.includes("ㄷ")) {
@@ -176,10 +189,10 @@ function search() {
 
     axios
         .post("https://api.openai.com/v1/chat/completions", data, config) // POST 요청
-        .then(function (response1) {
+        .then(function (response) {
             console.log(reqStr);
-            console.log(response1.data.choices[0].message.content);
-            handleAPIResponse(response1.data.choices[0].message.content);
+            console.log(response.data.choices[0].message.content);
+            handleAPIResponse(response.data.choices[0].message.content);
             StaffRespond();
         })
         .catch(function (error) {
@@ -189,24 +202,14 @@ function search() {
 
 function StaffRespond() {
 
-    keywords = recentStaff +"\n"+ recentCustomer;
-
-
-
+    keywords = recentStaff + "\n" + recentCustomer;
     let nextAskContent = "";
     if (contents.indexOf("메뉴선택") == -1) {
         nextAskContent = "메뉴선택";
-        var question = keywords;
-        question += "\n위 대화를 보고 다음 보기 중 손님이 고른 메뉴를 고르시오\n";
-        question += JSON.stringify(menuList);
-        question += "\n answer : "
-        console.log(question)
-        console.log(checkString(getGpt(question), menuList));
-        
     }
     else if (contents.indexOf("사이즈") == -1) {
         nextAskContent = "사이즈";
-    }    
+    }
     else if (contents.indexOf("테이크아웃여부") == -1) {
         nextAskContent = "테이크아웃여부";
     }
