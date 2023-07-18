@@ -21,7 +21,7 @@ var config = {
 const checkString = (str, listdata) => {
     for (let i = 0; i < listdata.length; i++) {
         if (str.includes(listdata[i])) {
-            return str;
+            return listdata[i];
         }
     }
     return false;
@@ -82,9 +82,6 @@ $(document).ready(function () {
 
 function handleAPIResponse(response) {
     var question = recentStaff + "\n" + recentCustomer;
-
-
-
     if (response.includes("ㄴ")) {
         question += "\n위 대화를 보고 다음 보기 중 손님이 고른 메뉴를 고르시오\n";
         question += JSON.stringify(menuList);
@@ -139,9 +136,10 @@ function getGpt(keyword) {
 
     axios
         .post("https://api.openai.com/v1/chat/completions", data, config) // POST 요청
-        .then(function (response1) {
-            console.log(reqStr);
-            return response1.data.choices[0].message.content;
+        .then(function (response) {
+            result = response.data.choices[0].message.content
+            console.log(result);
+            return result;
         })
         .catch(function (error) {
             console.error(error);
