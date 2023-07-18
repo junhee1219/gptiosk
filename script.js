@@ -79,15 +79,16 @@ $(document).ready(function () {
     });
     //search(lastMsg, handleAPIResponse); // url, data, callback함수
 });
-
-function handleAPIResponse(response) {
+const handleAPIResponse = async (response) => {
+// function async handleAPIResponse(response) {
     var question = recentStaff + "\n" + recentCustomer;
     if (response.includes("ㄴ")) {
         question += "\n위 대화를 보고 다음 보기 중 손님이 고른 메뉴를 고르시오\n";
         question += JSON.stringify(menuList);
         question += "\n answer : "
         console.log(question)
-        deciMenu = checkString(getGpt(question), menuList)
+        var getResult = await getGpt(question)
+        deciMenu = checkString(getResult, menuList)
         console.log(deciMenu);
         if (deciMenu != false){
             addBadge("", "메뉴선택 : "+deciMenu);
@@ -119,8 +120,7 @@ function addBadge(cls, content) {
     }
 }
 
-
-function getGpt(keyword) {
+const getGpt = async (keyword) => {
     var messages = [
         {
             role: "system",
