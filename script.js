@@ -36,7 +36,7 @@ const checkString = (str, listdata) => {
     var result = [];
     for (let i = 0; i < listdata.length; i++) {
         if (str.includes(listdata[i])) {
-            result.append(listdata[i]);
+            result.push(listdata[i]);
         }
     }
     return result;
