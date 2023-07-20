@@ -7,6 +7,7 @@ let menuData;
 var xhr = new XMLHttpRequest();
 var menuList;
 var askContent;
+var sizeList = ["톨","그란데","벤티"]
 
 // @TODO : chatgpt와 통신중인거 state 나타내는 div요소 하나 만들고(색깔 등)
 // 그사이에 채팅친거는 messages에 append해서 저장해놨다가 gpt에던지기
@@ -132,7 +133,27 @@ const handleAPIResponse = async (response) => {
         }
     }
     if (response.includes("ㄷ")) {
-        addBadge("", "사이즈");
+        question += "\nLook at the above conversation and select the size the customer chose from the following lists.\n";
+        question += "\nIf the size selected by the guest is not in the view below, say None.\n";
+        question += JSON.stringify(sizeList);
+        question += "\n answer : "
+
+        var getResult = await getGpt(question)
+        var deciSize = checkString(getResult, sizeList) // 검사해서 첫번째로 겹치는거
+        if (deciSize != []) {
+            addBadge("", "사이즈");
+            for (var i = 0; i < deciSize.length; i++) {
+                addBadge("", deciSize[i])
+            }
+            askContent = "";
+        }
+        else {
+            askContent = "===========음료 사이즈 목록===========\n"
+            askContent += JSON.stringify(sizeList);
+            askContent += "\n===========================\n"
+            askContent += "Customer ordered size [" + getResult
+                + "], but there is no such size. Serve customers by simply sentense. "
+        }
     }
 
     if (response.includes("ㄹ")) {
@@ -185,7 +206,7 @@ function search() {
     getIntendScript += recentCustomer;
     getIntendScript += "===========================\n";
     getIntendScript += "Answer : ";
-
+    
     var messages = [
         { role: "system", content: "Act as a person who chooses the correct answer", },
         { role: "user", content: getIntendScript },
@@ -206,6 +227,7 @@ function search() {
 
 function StaffRespond() {
     keywords = recentStaff + "\n" + recentCustomer;
+    recentCustomer = ""; // 다 썼으면 flush
     let nextAskContent = "";
     if (contents.indexOf("메뉴선택") == -1) {
         nextAskContent = "메뉴선택";
