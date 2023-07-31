@@ -48,7 +48,7 @@ function toggleLight() {
 
 }
 
-function equals(a, b) { JSON.stringify(a) === JSON.stringify(b); }
+function equals(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
 
 
 function setData(messages) { data.messages = messages; }
