@@ -3,7 +3,7 @@ let clickTimeout;
 let checkTime = 0.001;
 let contents = [];
 let recentStaff = '';
-let recentCustomer = '';
+let recent손님 = '';
 let menuData;
 let isAddBadge = false;
 let menuList;
@@ -21,10 +21,11 @@ reqStr += "ㄱ. 손님 decided coffee menu to order.\n";
 reqStr += "ㄴ. 손님 decided coffee size(not quantity).\n";
 reqStr += "ㄷ. 손님 decided payment method to pay.\n";
 reqStr += "ㄹ. 손님 decided for here or to go.\n";
-reqStr += "ㅁ. 손님 just ask or request to the staff.(recommendation, information, etc..)\n";
-reqStr += "ㅂ. Others.(ice breaking, small talk, etc..)\n";
-reqStr += "The below is a conversation between a customer and a clerk at a cafe.\n";
-reqStr += "Choose all the correct answer from the above choices.\n";
+reqStr += "ㅁ. 손님 decided quantity of coffee.\n";
+reqStr += "ㅂ. 손님 just ask or request to the staff.(recommendation, information, etc..)\n";
+reqStr += "ㅅ. Others.(ice breaking, small talk, etc..)\n";
+reqStr += "The below is a conversation between 직원 and 손님 at a cafe.\n";
+reqStr += "Choose all the correct answer or ㅂ about 손님.\n";
 reqStr += "If it is a simple question or just small talk, answer only ㅁ or ㅂ\n";
 
 
@@ -82,7 +83,7 @@ function initPage() {
     $("#chat-header").append('<h2>키오스크챗</h2><div class ="badge-area"></div><div><button id="refresh-button"><i class="bi bi-arrow-clockwise"></i></button> <div class="status-circle green" id = "light"></div></div>');
     contents = [];
     recentStaff = "직원 : 안녕하세요. RI카페입니다. 무엇을 도와 드릴까요?";
-    recentCustomer = '';
+    recent손님 = '';
     $("#chat-messages").append(recentStaff); // 메세지 채팅창에 보이기
     $("#refresh-button").click(function () {
         initPage();
@@ -99,11 +100,11 @@ $("#message-input").keypress(function (e) {
 $("#send-button").click(function () {
     $("#console").empty();
     let message = $("#message-input").val();
-    customerMsgForView = "나 : " + message;
-    recentCustomer += "손님 : " + message;
+    손님MsgForView = "나 : " + message;
+    recent손님 += "손님 : " + message;
     if (message.trim() !== "") {
         clearTimeout(clickTimeout); // 클릭 타이머 초기화
-        let messageElement = $("<div>").text(customerMsgForView); // 메세지 채팅창에 보이기
+        let messageElement = $("<div>").text(손님MsgForView); // 메세지 채팅창에 보이기
         $("#chat-messages").append(messageElement); // 메세지 채팅창에 보이기
         $("#chat-messages").scrollTop($("#chat-messages")[0].scrollHeight);
         $("#message-input").val(""); // 메세지 input창 clear
@@ -119,7 +120,7 @@ function search() {
     toggleLight();
     let getIntendScript = reqStr + "======== 대화내용 =========\n";
     getIntendScript += recentStaff + "\n";
-    getIntendScript += recentCustomer + "\n";
+    getIntendScript += recent손님 + "\n";
     getIntendScript += "===========================\n";
     getIntendScript += "Answer : ";
     let messages = [{ "role": "user", "content": getIntendScript }];
@@ -161,9 +162,9 @@ async function gptResponse(response) {
     askContent = "";
     isAddBadge = false;
     // function async gptResponse(response) {
-    let question = recentStaff + "\n" + recentCustomer;
+    let question = recentStaff + "\n" + recent손님;
     if (response.includes("ㄱ")) {
-        question += "\nLook at the above conversation and select the menu the customer chose from the following lists.\n";
+        question += "\nLook at the above conversation and select the menu the 손님 chose from the following lists.\n";
         question += "\nIf the menu selected by the guest is not in the view below, say None.\n";
         question += "============메뉴판===========\n";
         question += JSON.stringify(menuList);
@@ -176,17 +177,16 @@ async function gptResponse(response) {
             for (let i = 0; i < deciMenu.length; i++) {
                 addBadge("modal-content", deciMenu[i])
             }
-            askContent = "";
         }
         else {
             askContent = "============메뉴판===========\n"
             askContent += JSON.stringify(menuList);
             askContent += "\n===========================\n"
-            askContent += "Customer ordered [" + getResult + "], but there is no such menu. 한국어로 고객을 응대해라. "
+            askContent += "손님 ordered [" + getResult + "], but there is no such menu. 한국어로 고객을 응대해라. "
         }
     }
     if (response.includes("ㄴ")) {
-        question += "\nLook at the above conversation and select the size the customer chose from the following lists.\n";
+        question += "\nLook at the above conversation and select the size the 손님 chose from the following lists.\n";
         question += "\nIf the size selected by the guest is not in the view below, say None.\n";
         question += JSON.stringify(sizeList);
         question += "\n 답 : "
@@ -198,14 +198,13 @@ async function gptResponse(response) {
             for (let i = 0; i < deciSize.length; i++) {
                 addBadge("modal-content", deciSize[i])
             }
-            askContent = "";
         }
         else {
             askContent = "===========음료 사이즈 목록===========\n"
             askContent += JSON.stringify(sizeList);
             askContent += "\n===========================\n"
-            askContent += "Customer ordered size [" + getResult
-                + "], but there is no such size. Serve customers by simply sentense. 한국어로 고객을 응대해라. "
+            askContent += "손님 ordered size [" + getResult
+                + "], but there is no such size. Serve 손님s by simply sentense. 한국어로 고객을 응대해라. "
         }
     }
 
@@ -222,14 +221,13 @@ async function gptResponse(response) {
             for (let i = 0; i < deciPay.length; i++) {
                 addBadge("modal-content", deciPay[i])
             }
-            askContent = "";
         }
         else {
             askContent = "===========결제수단 목록===========\n"
             askContent += JSON.stringify(payMethodList);
             askContent += "\n===========================\n"
-            askContent += "Customer want to pay from [" + getResult
-                + "], but there is no such pay method. Serve customers by simply sentense. 한국어로 고객을 응대해라. "
+            askContent += "손님 want to pay from [" + getResult
+                + "], but there is no such pay method. Serve 손님s by simply sentense. 한국어로 고객을 응대해라. "
         }
     }
 
@@ -246,10 +244,9 @@ async function gptResponse(response) {
             for (let i = 0; i < deciWhere.length; i++) {
                 addBadge("modal-content", deciWhere[i])
             }
-            askContent = "";
         }
         else {
-            askContent = "Customer want to eat or drink in [" + getResult
+            askContent = "손님 want to eat or drink in [" + getResult
                 + "], but there is no such option. 테이크아웃인지 매장식사인지 한국어로 고객을 응대해라. "
         }
     }
@@ -301,8 +298,8 @@ async function getGpt(keyword) {
 
 
 function StaffRespond() {
-    keywords = recentStaff + "\n" + recentCustomer;
-    recentCustomer = ""; // 다 썼으면 flush
+    keywords = recentStaff + "\n" + recent손님;
+    recent손님 = ""; // 다 썼으면 flush
     let nextAskContent = "";
     if (contents.indexOf("메뉴선택") == -1) {
         nextAskContent = "메뉴선택";
@@ -317,8 +314,8 @@ function StaffRespond() {
         nextAskContent = "결제수단";
     }
     if (nextAskContent !== "" && askContent == "") {
-        keywords += "\nThe above is just a conversation between a cafe Staff and a customer.";
-        keywords += "\nAsk what the customer will decide on about " + nextAskContent + ". 한국어로 간단하게 1~2 문장으로 말할 것.\n";
+        keywords += "\nThe above is just a conversation between a cafe Staff and a 손님.";
+        keywords += "\nAsk what the 손님 will decide on about " + nextAskContent + ". 한국어로 간단하게 1~2 문장으로 말할 것.\n";
         keywords += "직원 : "
         let messages = [
             {
