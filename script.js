@@ -180,7 +180,8 @@ async function gptResponse(response) {
             askContent = "============메뉴판===========\n"
             askContent += JSON.stringify(menuList);
             askContent += "\n===========================\n"
-            askContent += "손님 ordered [" + getResult + "], but there is no such menu. 한국어로 고객을 응대해라. "
+            askContent += recentStaff + "\n" + recentCustomer + "\n"
+            askContent += "손님이 이야기한 메뉴는 메뉴판에 없다. 메뉴판을 참고해서 응대해라."
         }
     }
     if (response.includes("ㄴ")) {
@@ -202,8 +203,8 @@ async function gptResponse(response) {
             askContent = "===========음료 사이즈 목록===========\n"
             askContent += JSON.stringify(sizeList);
             askContent += "\n===========================\n"
-            askContent += "손님 ordered size [" + getResult
-                + "], but there is no such size. Serve 손님s by simply sentense. 한국어로 고객을 응대해라. "
+            askContent += recentStaff + "\n" + recentCustomer + "\n"
+            askContent += "손님이 이야기한 음료 사이즈는 목록에 없다. 음료 사이즈 목록을 참고해서 응대해라."
         }
     }
 
@@ -226,8 +227,8 @@ async function gptResponse(response) {
             askContent = "===========결제수단 목록===========\n"
             askContent += JSON.stringify(payMethodList);
             askContent += "\n===========================\n"
-            askContent += "손님 want to pay from [" + getResult
-                + "], but there is no such pay method. Serve 손님s by simply sentense. 한국어로 고객을 응대해라. "
+            askContent += recentStaff + "\n" + recentCustomer + "\n"
+            askContent += "손님이 이야기한 결제수단은 목록에 없다. 결제수단 목록을 참고해서 응대해라."
         }
     }
 
@@ -249,6 +250,10 @@ async function gptResponse(response) {
         if (!equals(getResult, "")) {
             addBadge("", "테이크아웃여부"); // 여기까지만 하기
             addBadge("modal-content", getResult);
+        }
+        else{
+            askContent = recentStaff + "\n" + recentCustomer + "\n"
+            askContent += "손님이 먹고갈지, 테이크아웃할지 여부를 이해못했다. 다시한번 물어봐라."
         }
     }
     if (isAddBadge) {
