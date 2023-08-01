@@ -239,9 +239,9 @@ async function gptResponse(response) {
         question += "\n 답 : "
         let getResult = await getGpt(question);
         getResult = getResult.toLowerCase();
-        if (getResult == "for here") {
+        if (getResult.includes("for here")) {
             getResult = "매장식사";
-        } else if (getResult == "to go") {
+        } else if (getResult.includes("to go")) {
             getResult = "테이크아웃";
         } else {
             getResult = "";
