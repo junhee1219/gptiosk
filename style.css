@@ -112,6 +112,7 @@ body {
     padding: 10px;
 }
 .badge-area{
+    gap: 5px;
     overflow-x: auto; /* 가로 스크롤을 자동으로 생성 */
 }
 .badge {

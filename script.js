@@ -21,8 +21,8 @@ reqStr += "ㄹ. 손님 order for here or to go.\n";
 reqStr += "ㅁ. 손님 just ask or request to the staff.(recommendation, information, etc..)\n";
 reqStr += "ㅂ. Others.(ice breaking, small talk, etc..)\n";
 reqStr += "The below is a conversation between 직원 and 손님 at a cafe.\n";
-reqStr += "Choose only correct answers about 손님 and why you think that simply.\n";
-reqStr += "If it is a simple question or just small talk, answer only ㅁ or ㅂ\n";
+reqStr += "Choose only correct answers about 손님.\n";
+reqStr += "If it is a simple question(ㅁ) or just small talk(ㅂ), answer only ㅁ or ㅂ.\n";
 
 
 let API_KEY = "sk-wzWR5Z";
@@ -40,9 +40,7 @@ function toggleLight() {
     } else {
         $("#light").removeClass("red").addClass("green");
         $("#message-input").prop("disabled", false);
-
     }
-
 }
 
 function equals(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
@@ -57,7 +55,6 @@ function checkString(str, listdata) {
             result.push(listdata[i]);
         }
     }
-
     return result;
 };
 
@@ -234,10 +231,10 @@ async function gptResponse(response) {
 
     if (response.includes("ㄹ")) {
         question = recentStaff + "\n" + recentCustomer;
-        question += "\nLook at the above conversation and select the 매장식사(for here) or 테이크아웃(to go).\n";
-        question += "\nIf the place selected by the 손님 is not in the view below, say None.\n";
+        question += "\n위 대화를 보고 손님이 매장에서 식사할지(for here) or 테이크아웃할지(to go) 보기에서 고르시오.\n";
+        question += "\n매장에서 식사할지, 테이크아웃할지 정해지지 않았다면 None이라고 대답하세요.\n 보기 :";
         question += JSON.stringify(hereOrTogo);
-        question += "\n 답 : "
+        question += "\n Answer : "
         let getResult = await getGpt(question);
         getResult = getResult.toLowerCase();
         if (getResult.includes("for here")) {
