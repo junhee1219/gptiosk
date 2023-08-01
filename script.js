@@ -14,10 +14,10 @@ let hereOrTogo = ["테이크아웃", "매장식사"]
 let deciList = [];
 
 let reqStr = '';
-reqStr += "ㄱ. 손님 decided coffee menu to order.\n";
-reqStr += "ㄴ. 손님 decided coffee size.\n";
-reqStr += "ㄷ. 손님 decided payment method to pay.\n";
-reqStr += "ㄹ. 손님 decided for here or to go.\n";
+reqStr += "ㄱ. 손님 order coffee menu to order.\n";
+reqStr += "ㄴ. 손님 order coffee size.\n";
+reqStr += "ㄷ. 손님 order payment method to pay.\n";
+reqStr += "ㄹ. 손님 order for here or to go.\n";
 reqStr += "ㅁ. 손님 just ask or request to the staff.(recommendation, information, etc..)\n";
 reqStr += "ㅂ. Others.(ice breaking, small talk, etc..)\n";
 reqStr += "The below is a conversation between 직원 and 손님 at a cafe.\n";
