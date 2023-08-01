@@ -3,7 +3,7 @@ let clickTimeout;
 let checkTime = 0.001;
 let contents = [];
 let recentStaff = '';
-let recent손님 = '';
+let recentCustomer = '';
 let menuData;
 let isAddBadge = false;
 let menuList;
@@ -79,7 +79,7 @@ function initPage() {
     $("#chat-header").append('<h2>키오스크챗</h2><div class ="badge-area"></div><div><button id="refresh-button"><i class="bi bi-arrow-clockwise"></i></button> <div class="status-circle green" id = "light"></div></div>');
     contents = [];
     recentStaff = "직원 : 안녕하세요. RI카페입니다. 무엇을 도와 드릴까요?";
-    recent손님 = '';
+    recentCustomer = '';
     $("#chat-messages").append(recentStaff); // 메세지 채팅창에 보이기
     $("#refresh-button").click(function () {
         initPage();
@@ -96,11 +96,11 @@ $("#message-input").keypress(function (e) {
 $("#send-button").click(function () {
     $("#console").empty();
     let message = $("#message-input").val();
-    손님MsgForView = "나 : " + message;
-    recent손님 += "손님 : " + message;
+    CustomerMsgForView = "나 : " + message;
+    recentCustomer += "손님 : " + message;
     if (message.trim() !== "") {
         clearTimeout(clickTimeout); // 클릭 타이머 초기화
-        let messageElement = $("<div>").text(손님MsgForView); // 메세지 채팅창에 보이기
+        let messageElement = $("<div>").text(CustomerMsgForView); // 메세지 채팅창에 보이기
         $("#chat-messages").append(messageElement); // 메세지 채팅창에 보이기
         $("#chat-messages").scrollTop($("#chat-messages")[0].scrollHeight);
         $("#message-input").val(""); // 메세지 input창 clear
@@ -116,7 +116,7 @@ function search() {
     toggleLight();
     let getIntendScript = reqStr + "======== 대화내용 =========\n";
     getIntendScript += recentStaff + "\n";
-    getIntendScript += recent손님 + "\n";
+    getIntendScript += recentCustomer + "\n";
     getIntendScript += "===========================\n";
     getIntendScript += "Answer : ";
     let messages = [{ "role": "user", "content": getIntendScript }];
@@ -145,10 +145,12 @@ function trimResponse(response) {
     } else {
         result = "직원 : " + textMsg;
     }
-    if (result.indexOf("손님 :") != -1) {
+    index1 = result.indexOf("손님 :");
+    index2 = result.indexOf("손님:"); 
+    if (index1 != -1) {
         result = result.substring(0, index1);
     }
-    if (result.indexOf("손님:") != -1) {
+    if (index2 != -1) {
         result = result.substring(0, index2);
     }
     return result;
@@ -158,8 +160,9 @@ async function gptResponse(response) {
     askContent = "";
     isAddBadge = false;
     // function async gptResponse(response) {
-    let question = recentStaff + "\n" + recent손님;
+    let question = ""
     if (response.includes("ㄱ")) {
+        question = recentStaff + "\n" + recentCustomer;
         question += "\nLook at the above conversation and select the menu the 손님 chose from the following lists.\n";
         question += "\nIf the menu selected by the guest is not in the view below, say None.\n";
         question += "============메뉴판===========\n";
@@ -182,6 +185,7 @@ async function gptResponse(response) {
         }
     }
     if (response.includes("ㄴ")) {
+        question = recentStaff + "\n" + recentCustomer;
         question += "\nLook at the above conversation and select the size the 손님 chose from the following lists.\n";
         question += "\nIf the size selected by the guest is not in the view below, say None.\n";
         question += JSON.stringify(sizeList);
@@ -205,6 +209,7 @@ async function gptResponse(response) {
     }
 
     if (response.includes("ㄷ")) {
+        question = recentStaff + "\n" + recentCustomer;
         question += "\nLook at the above conversation and select the pay method 손님 chose from the following lists.\n";
         question += "\nIf the pay method selected by the 손님 is not in the view below, say None.\n";
         question += JSON.stringify(payMethodList);
@@ -228,6 +233,7 @@ async function gptResponse(response) {
     }
 
     if (response.includes("ㄹ")) {
+        question = recentStaff + "\n" + recentCustomer;
         question += "\nLook at the above conversation and select the 매장식사(here) or 테이크아웃(to go).\n";
         question += "\nIf the place selected by the 손님 is not in the view below, say None.\n";
         question += JSON.stringify(hereOrTogo);
@@ -294,8 +300,8 @@ async function getGpt(keyword) {
 
 
 function StaffRespond() {
-    keywords = recentStaff + "\n" + recent손님;
-    recent손님 = ""; // 다 썼으면 flush
+    keywords = recentStaff + "\n" + recentCustomer;
+    recentCustomer = ""; // 다 썼으면 flush
     let nextAskContent = "";
     if (contents.indexOf("메뉴선택") == -1) {
         nextAskContent = "메뉴선택";
