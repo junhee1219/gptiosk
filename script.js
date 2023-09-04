@@ -30,11 +30,12 @@ menuStr += "setMenu는 map을 input으로 받고, key는 메뉴이름(str), valu
 menuStr += "예를들어 아메리카노 2잔, 카페라떼 1잔을 시켰다면 setMenu({'아메리카노' : 2 , '카페라떼' : 1})로 호출해라.\n"
 menuStr += "다음은 손님과 직원의 대화내용이다.\n"
 
-// let API_KEY = "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"
-let API_KEY = "sk-wzWR5Z";
-API_KEY += "bfFqw1CT7";
-API_KEY += "gdKBOT3BlbkFJo";
-API_KEY += "VSYTnt9wDHA3vDHgU4v";
+let API_KEY = "sk-DX8rY";
+API_KEY += "Kz3zBBjW";
+API_KEY += "Hy3M2MCT3Blb";
+API_KEY += "kFJ3jlXuPm";
+API_KEY += "U3J0zeBBAboBB";
+
 let config = { headers: { Authorization: `Bearer ${API_KEY}`, "Content-Type": "application/json", }, };
 let data = { model: "gpt-4-0613", messages: '' };
 
@@ -67,14 +68,14 @@ function replaceDivtoNew(str) {
     return str.replace(/<\/?div>/g, '\n');
 }
 
-// xhr.open("GET", "data.json", true);
-// xhr.onreadystatechange = function () {
-//     if (xhr.readyState === 4 && xhr.status === 200) {
-//         menuData = JSON.parse(xhr.responseText);
-//         menuList = menuData.menu.map(item => item.name);
-//     }
-// };
-// xhr.send();
+xhr.open("GET", "data.json", true);
+xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+        menuData = JSON.parse(xhr.responseText);
+        menuList = menuData.menu.map(item => item.name);
+    }
+};
+xhr.send();
 
 function initPage() {
     deciList = [];
@@ -118,38 +119,26 @@ $(document).ready(function () {
 
 
 function search() {
-    // toggleLight();
-    // let getIntendScript = reqStr + "======== 대화내용 =========\n";
-    // getIntendScript += recentStaff + "\n";
-    // getIntendScript += recentCustomer + "\n";
-    // getIntendScript += "===========================\n";
-    // getIntendScript += "Answer : ";
-    // let messages = [{ "role": "user", "content": getIntendScript }];
-    // setData(messages);
+    toggleLight();
+    let getIntendScript = reqStr + "======== 대화내용 =========\n";
+    getIntendScript += recentStaff + "\n";
+    getIntendScript += recentCustomer + "\n";
+    getIntendScript += "===========================\n";
+    getIntendScript += "Answer : ";
+    let messages = [{ "role": "user", "content": getIntendScript }];
+    setData(messages);
 
-    // axios
-    //     .post("https://api.openai.com/v1/chat/completions", data, config) // POST 요청
-    //     .then(function (response) {
-    //         $("#console").append(getIntendScript.replace(/\n/g, "<br>"));
-    //         $("#console").append("<strong>" + response.data.choices[0].message.content + "</strong><br><br>");
-    //         gptResponse(response.data.choices[0].message.content);
-    //     })
-    //     .catch(function (error) {
-    //         console.error(error);
-    //     });
-        var getMenuIntendScript = menuStr + replaceDivtoNew($("#chat-messages").html());
-        messages = [{ "role": "user", "content": getMenuIntendScript }];
-        setData(messages);
-        axios
+    axios
         .post("https://api.openai.com/v1/chat/completions", data, config) // POST 요청
         .then(function (response) {
-            $("#console").append(getMenuIntendScript.replace(/\n/g, "<br>"));
+            $("#console").append(getIntendScript.replace(/\n/g, "<br>"));
             $("#console").append("<strong>" + response.data.choices[0].message.content + "</strong><br><br>");
-            gptResponse(replaceDivtoNew($("#chat-messages").html()));
+            gptResponse(response.data.choices[0].message.content);
         })
         .catch(function (error) {
             console.error(error);
         });
+
 
 }
 
@@ -177,120 +166,120 @@ async function gptResponse(response) {
     
 
 
-    // askContent = "";
-    // isAddBadge = false;
-    // // function async gptResponse(response) {
-    // let question = ""
-    // if (response.includes("ㄱ")) {
-    //     question = recentStaff + "\n" + recentCustomer;
-    //     question += "\nLook at the above conversation and select the menu the 손님 chose from the following lists.\n";
-    //     question += "\nIf the menu selected by the guest is not in the view below, say None.\n";
-    //     question += "============메뉴판===========\n";
-    //     question += JSON.stringify(menuList);
-    //     question += "\n===========================\n";
-    //     question += "\n 답 : "
-    //     let getResult = await getGpt(question);
-    //     deciMenu = checkString(getResult, menuList) // 겹치는거 list로 반환
-    //     if (!equals(deciMenu, [])) {
-    //         addBadge("", "메뉴선택");
-    //         for (let i = 0; i < deciMenu.length; i++) {
-    //             addBadge("modal-content", deciMenu[i])
-    //         }
-    //     }
-    //     else {
-    //         askContent = "============메뉴판===========\n"
-    //         askContent += JSON.stringify(menuList);
-    //         askContent += "\n===========================\n"
-    //         askContent += recentStaff + "\n" + recentCustomer + "\n"
-    //         askContent += "손님이 이야기한 메뉴는 메뉴판에 없다. 메뉴판을 참고해서 응대해라."
-    //     }
-    // }
-    // if (response.includes("ㄴ")) {
-    //     question = recentStaff + "\n" + recentCustomer;
-    //     question += "\nLook at the above conversation and select the size the 손님 chose from the following lists.\n";
-    //     question += "\nIf the size selected by the guest is not in the view below, say None.\n";
-    //     question += JSON.stringify(sizeList);
-    //     question += "\n 답 : "
-    //     let getResult = await getGpt(question);
-    //     let deciSize = checkString(getResult, sizeList);
+    askContent = "";
+    isAddBadge = false;
+    // function async gptResponse(response) {
+    let question = ""
+    if (response.includes("ㄱ")) {
+        question = recentStaff + "\n" + recentCustomer;
+        question += "\nLook at the above conversation and select the menu the 손님 chose from the following lists.\n";
+        question += "\nIf the menu selected by the guest is not in the view below, say None.\n";
+        question += "============메뉴판===========\n";
+        question += JSON.stringify(menuList);
+        question += "\n===========================\n";
+        question += "\n 답 : "
+        let getResult = await getGpt(question);
+        deciMenu = checkString(getResult, menuList) // 겹치는거 list로 반환
+        if (!equals(deciMenu, [])) {
+            addBadge("", "메뉴선택");
+            for (let i = 0; i < deciMenu.length; i++) {
+                addBadge("modal-content", deciMenu[i])
+            }
+        }
+        else {
+            askContent = "============메뉴판===========\n"
+            askContent += JSON.stringify(menuList);
+            askContent += "\n===========================\n"
+            askContent += recentStaff + "\n" + recentCustomer + "\n"
+            askContent += "손님이 이야기한 메뉴는 메뉴판에 없다. 메뉴판을 참고해서 응대해라."
+        }
+    }
+    if (response.includes("ㄴ")) {
+        question = recentStaff + "\n" + recentCustomer;
+        question += "\nLook at the above conversation and select the size the 손님 chose from the following lists.\n";
+        question += "\nIf the size selected by the guest is not in the view below, say None.\n";
+        question += JSON.stringify(sizeList);
+        question += "\n 답 : "
+        let getResult = await getGpt(question);
+        let deciSize = checkString(getResult, sizeList);
 
-    //     if (!equals(deciSize, [])) {
-    //         addBadge("", "사이즈");
-    //         for (let i = 0; i < deciSize.length; i++) {
-    //             addBadge("modal-content", deciSize[i])
-    //         }
-    //     }
-    //     else {
-    //         askContent = "===========음료 사이즈 목록===========\n"
-    //         askContent += JSON.stringify(sizeList);
-    //         askContent += "\n===========================\n"
-    //         askContent += recentStaff + "\n" + recentCustomer + "\n"
-    //         askContent += "손님이 이야기한 음료 사이즈는 목록에 없다. 음료 사이즈 목록을 참고해서 응대해라."
-    //     }
-    // }
+        if (!equals(deciSize, [])) {
+            addBadge("", "사이즈");
+            for (let i = 0; i < deciSize.length; i++) {
+                addBadge("modal-content", deciSize[i])
+            }
+        }
+        else {
+            askContent = "===========음료 사이즈 목록===========\n"
+            askContent += JSON.stringify(sizeList);
+            askContent += "\n===========================\n"
+            askContent += recentStaff + "\n" + recentCustomer + "\n"
+            askContent += "손님이 이야기한 음료 사이즈는 목록에 없다. 음료 사이즈 목록을 참고해서 응대해라."
+        }
+    }
 
-    // if (response.includes("ㄷ")) {
-    //     question = recentStaff + "\n" + recentCustomer;
-    //     question += "\nLook at the above conversation and select the pay method 손님 chose from the following lists.\n";
-    //     question += "\nIf the pay method selected by the 손님 is not in the view below, say None.\n";
-    //     question += JSON.stringify(payMethodList);
-    //     question += "\n 답 : "
-    //     let getResult = await getGpt(question);
-    //     let deciPay = checkString(getResult, payMethodList);
+    if (response.includes("ㄷ")) {
+        question = recentStaff + "\n" + recentCustomer;
+        question += "\nLook at the above conversation and select the pay method 손님 chose from the following lists.\n";
+        question += "\nIf the pay method selected by the 손님 is not in the view below, say None.\n";
+        question += JSON.stringify(payMethodList);
+        question += "\n 답 : "
+        let getResult = await getGpt(question);
+        let deciPay = checkString(getResult, payMethodList);
 
-    //     if (!equals(deciPay, [])) {
-    //         addBadge("", "결제수단");
-    //         for (let i = 0; i < deciPay.length; i++) {
-    //             addBadge("modal-content", deciPay[i])
-    //         }
-    //     }
-    //     else {
-    //         askContent = "===========결제수단 목록===========\n"
-    //         askContent += JSON.stringify(payMethodList);
-    //         askContent += "\n===========================\n"
-    //         askContent += recentStaff + "\n" + recentCustomer + "\n"
-    //         askContent += "손님이 이야기한 결제수단은 목록에 없다. 결제수단 목록을 참고해서 응대해라."
-    //     }
-    // }
+        if (!equals(deciPay, [])) {
+            addBadge("", "결제수단");
+            for (let i = 0; i < deciPay.length; i++) {
+                addBadge("modal-content", deciPay[i])
+            }
+        }
+        else {
+            askContent = "===========결제수단 목록===========\n"
+            askContent += JSON.stringify(payMethodList);
+            askContent += "\n===========================\n"
+            askContent += recentStaff + "\n" + recentCustomer + "\n"
+            askContent += "손님이 이야기한 결제수단은 목록에 없다. 결제수단 목록을 참고해서 응대해라."
+        }
+    }
 
-    // if (response.includes("ㄹ")) {
-    //     question = recentStaff + "\n" + recentCustomer;
-    //     question += "\n위 대화를 보고 손님이 매장에서 식사할지(for here) or 테이크아웃할지(to go) 보기에서 고르시오.\n";
-    //     question += "\n매장에서 식사할지, 테이크아웃할지 정해지지 않았다면 None이라고 대답하세요.\n 보기 :";
-    //     question += JSON.stringify(hereOrTogo);
-    //     question += "\n Answer : "
-    //     let getResult = await getGpt(question);
-    //     getResult = getResult.toLowerCase();
-    //     if (getResult.includes("for here")) {
-    //         getResult = "매장식사";
-    //     } else if (getResult.includes("to go")) {
-    //         getResult = "테이크아웃";
-    //     } else {
-    //         getResult = "";
-    //     }
-    //     if (!equals(getResult, "")) {
-    //         addBadge("", "테이크아웃여부"); // 여기까지만 하기
-    //         addBadge("modal-content", getResult);
-    //     }
-    //     else{
-    //         askContent = recentStaff + "\n" + recentCustomer + "\n"
-    //         askContent += "손님이 먹고갈지, 테이크아웃할지 여부를 이해못했다. 다시한번 물어봐라."
-    //     }
-    // }
-    // if (isAddBadge) {
-    //     openPopup();
-    // }
-    // // const closeModalBtn = document.getElementById('closeModalBtn');
-    // // closeModalBtn.addEventListener('click', () => {
-    // //     // 확인버튼누르면 저장되는걸로
-    // //     modal.style.display = 'none';
-    // // });
-    // const modal = document.getElementById('modal');
-    // window.addEventListener('click', (event) => {
-    //     if (event.target === modal) {
-    //         modal.style.display = 'none';
-    //     }
+    if (response.includes("ㄹ")) {
+        question = recentStaff + "\n" + recentCustomer;
+        question += "\n위 대화를 보고 손님이 매장에서 식사할지(for here) or 테이크아웃할지(to go) 보기에서 고르시오.\n";
+        question += "\n매장에서 식사할지, 테이크아웃할지 정해지지 않았다면 None이라고 대답하세요.\n 보기 :";
+        question += JSON.stringify(hereOrTogo);
+        question += "\n Answer : "
+        let getResult = await getGpt(question);
+        getResult = getResult.toLowerCase();
+        if (getResult.includes("for here")) {
+            getResult = "매장식사";
+        } else if (getResult.includes("to go")) {
+            getResult = "테이크아웃";
+        } else {
+            getResult = "";
+        }
+        if (!equals(getResult, "")) {
+            addBadge("", "테이크아웃여부"); // 여기까지만 하기
+            addBadge("modal-content", getResult);
+        }
+        else{
+            askContent = recentStaff + "\n" + recentCustomer + "\n"
+            askContent += "손님이 먹고갈지, 테이크아웃할지 여부를 이해못했다. 다시한번 물어봐라."
+        }
+    }
+    if (isAddBadge) {
+        openPopup();
+    }
+    // const closeModalBtn = document.getElementById('closeModalBtn');
+    // closeModalBtn.addEventListener('click', () => {
+    //     // 확인버튼누르면 저장되는걸로
+    //     modal.style.display = 'none';
     // });
+    const modal = document.getElementById('modal');
+    window.addEventListener('click', (event) => {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
      StaffRespond();
 }
 
@@ -317,7 +306,7 @@ async function getGpt(keyword) {
         return result;
     } catch (error) {
         console.error(error);
-        return null; // 또는 오류 처리 방식에 맞게 처리합니다.
+        return null; 
     }
 }
 
@@ -348,104 +337,78 @@ function StaffRespond() {
             });
 
 
-    // keywords = recentStaff + "\n" + recentCustomer;
-    // recentCustomer = ""; // 다 썼으면 flush
-    // let nextAskContent = "";
-    // if (contents.indexOf("메뉴선택") == -1) {
-    //     nextAskContent = "어떤 메뉴를 선택하시겠어요?";
-    // }
-    // else if (contents.indexOf("사이즈") == -1) {
-    //     nextAskContent = "사이즈는 어떻게 해드릴까요? 톨, 그란데, 벤티사이즈 있습니다.";
-    // }
-    // else if (contents.indexOf("테이크아웃여부") == -1) {
-    //     nextAskContent = "매장식사 하시겠어요? 아니면 테이크아웃 하시나요?";
-    // }
-    // else if (contents.indexOf("결제수단") == -1) {
-    //     nextAskContent = "결제수단은 어떻게 하시겠어요? 카카오페이, 네이버페이, 카드, 현금 가능합니다.";
-    // }
-    // if (nextAskContent !== "" && askContent == "") {
-    //     keywords += "\n위는 카페 직원과 손님의 대화이다.";
-    //     keywords += "\n 대화의 흐름에 맞게["+ nextAskContent + "]를 자연스럽게 말해라. 한국어로 간단하게 1~2 문장으로 말할 것.\n";
-    //     keywords += "직원 : "
-    //     let messages = [
-    //         {
-    //             role: "system",
-    //             content: "you are a cafe Staff. Treat guests kindly.",
-    //         },
-    //         { role: "user", content: keywords },
-    //     ];
-    //     setData(messages);
+    keywords = recentStaff + "\n" + recentCustomer;
+    recentCustomer = ""; // 다 썼으면 flush
+    let nextAskContent = "";
+    if (contents.indexOf("메뉴선택") == -1) {
+        nextAskContent = "어떤 메뉴를 선택하시겠어요?";
+    }
+    else if (contents.indexOf("사이즈") == -1) {
+        nextAskContent = "사이즈는 어떻게 해드릴까요? 톨, 그란데, 벤티사이즈 있습니다.";
+    }
+    else if (contents.indexOf("테이크아웃여부") == -1) {
+        nextAskContent = "매장식사 하시겠어요? 아니면 테이크아웃 하시나요?";
+    }
+    else if (contents.indexOf("결제수단") == -1) {
+        nextAskContent = "결제수단은 어떻게 하시겠어요? 카카오페이, 네이버페이, 카드, 현금 가능합니다.";
+    }
+    if (nextAskContent !== "" && askContent == "") {
+        keywords += "\n위는 카페 직원과 손님의 대화이다.";
+        keywords += "\n 대화의 흐름에 맞게["+ nextAskContent + "]를 자연스럽게 말해라. 한국어로 간단하게 1~2 문장으로 말할 것.\n";
+        keywords += "직원 : "
+        let messages = [
+            {
+                role: "system",
+                content: "you are a cafe Staff. Treat guests kindly.",
+            },
+            { role: "user", content: keywords },
+        ];
+        setData(messages);
 
-    //     axios.post("https://api.openai.com/v1/chat/completions", data, config) // POST 요청
-    //         .then(function (response) {
+        axios.post("https://api.openai.com/v1/chat/completions", data, config) // POST 요청
+            .then(function (response) {
 
-    //             recentStaff = trimResponse(response)
-    //             $("#console").append(keywords.replace(/\n/g, "<br>"));
-    //             $("#console").append("<strong>" + response.data.choices[0].message.content + "</strong><br><br>");
-    //             $("#chat-messages").append(recentStaff); // 메세지 채팅창에 보이기
-    //             $("#chat-messages").scrollTop($("#chat-messages")[0].scrollHeight);
-    //         })
-    //         .catch(function (error) {
-    //             console.error(error);
-    //         });
-    // } else if (askContent != "") {
-    //     keywords = askContent
-    //     keywords += "직원 : "
-    //     let messages = [
-    //         { role: "system", content: "you are a cafe Staff. Treat guests kindly." },
-    //         { role: "user", content: keywords },
-    //     ];
-    //     setData(messages);
+                recentStaff = trimResponse(response)
+                $("#console").append(keywords.replace(/\n/g, "<br>"));
+                $("#console").append("<strong>" + response.data.choices[0].message.content + "</strong><br><br>");
+                $("#chat-messages").append(recentStaff); // 메세지 채팅창에 보이기
+                $("#chat-messages").scrollTop($("#chat-messages")[0].scrollHeight);
+            })
+            .catch(function (error) {
+                console.error(error);
+            });
+    } else if (askContent != "") {
+        keywords = askContent
+        keywords += "직원 : "
+        let messages = [
+            { role: "system", content: "you are a cafe Staff. Treat guests kindly." },
+            { role: "user", content: keywords },
+        ];
+        setData(messages);
 
-    //     axios.post("https://api.openai.com/v1/chat/completions", data, config) // POST 요청
-    //         .then(function (response) {
+        axios.post("https://api.openai.com/v1/chat/completions", data, config) // POST 요청
+            .then(function (response) {
 
-    //             recentStaff = trimResponse(response);
-    //             $("#console").append(keywords.replace(/\n/g, "<br>"));
-    //             $("#console").append("<strong>" + response.data.choices[0].message.content + "</strong><br><br>");
-    //             $("#chat-messages").append(recentStaff); // 메세지 채팅창에 보이기
-    //             $("#chat-messages").scrollTop($("#chat-messages")[0].scrollHeight);
-    //         })
-    //         .catch(function (error) {
-    //             console.error(error);
-    //         });
+                recentStaff = trimResponse(response);
+                $("#console").append(keywords.replace(/\n/g, "<br>"));
+                $("#console").append("<strong>" + response.data.choices[0].message.content + "</strong><br><br>");
+                $("#chat-messages").append(recentStaff); // 메세지 채팅창에 보이기
+                $("#chat-messages").scrollTop($("#chat-messages")[0].scrollHeight);
+            })
+            .catch(function (error) {
+                console.error(error);
+            });
 
-    // }
+    }
 
-    // else {
-    //     recentStaff = "직원 : 주문이 모두 완료되었습니다. 잠시만 기다려주세요!";
-    //     $("#chat-messages").append(recentStaff);
-    //     $("#chat-messages").scrollTop($("#chat-messages")[0].scrollHeight);
-    // }
-    // toggleLight();
+    else {
+        recentStaff = "직원 : 주문이 모두 완료되었습니다. 잠시만 기다려주세요!";
+        $("#chat-messages").append(recentStaff);
+        $("#chat-messages").scrollTop($("#chat-messages")[0].scrollHeight);
+    }
+    toggleLight();
 }
 
 function openPopup() {
     modal.style.display = 'block';
 }
-
-
-
-// menuData.forEach(function(menu, index) {
-//     var col = document.createElement('div');
-//     col.className = 'col-6';
-//     var card = document.createElement('div');
-//     card.className = 'card';
-//     card.id = 'card' + (index + 1);
-//     var cardBody = document.createElement('div');
-//     cardBody.className = 'card-body';
-//     var title = document.createElement('h5');
-//     title.className = 'card-title';
-//     title.textContent = menu.name;
-//     var text = document.createElement('p');
-//     text.className = 'card-text';
-//     text.textContent = formatPrice(menu.price);
-
-//     cardBody.appendChild(title);
-//     cardBody.appendChild(text);
-//     card.appendChild(img);
-//     card.appendChild(cardBody);
-//     col.appendChild(card);
-
-//     container.appendChild(col);  // 컨테이너에 카드 추가
-// });
