@@ -1,80 +1,67 @@
-import openai
 import json
+import openai
+import requests
+from tenacity import retry, wait_random_exponential, stop_after_attempt
+from termcolor import colored
+
+#GPT_MODEL = "gpt-4-1106-preview"
+GPT_MODEL = "gpt-4-1106-preview"
 
 
-
-# Example dummy function hard coded to return the same weather
-# In production, this could be your backend API or an external API
-def get_current_weather(location, unit="fahrenheit"):
-    """Get the current weather in a given location"""
-    weather_info = {
-        "location": location,
-        "temperature": "72",
-        "unit": unit,
-        "forecast": ["sunny", "windy"],
+@retry(wait=wait_random_exponential(multiplier=1, max=40), stop=stop_after_attempt(3))
+def chat_completion_request(messages, tools=None, tool_choice=None, model=GPT_MODEL):
+    openai.api_key = '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'
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + openai.api_key,
     }
-    return json.dumps(weather_info)
+    json_data = {"model": model, "messages": messages}
+    if tools is not None:
+        json_data.update({"tools": tools})
+    if tool_choice is not None:
+        json_data.update({"tool_choice": tool_choice})
+    try:
+        response = requests.post(
+            "https://api.openai.com/v1/chat/completions",
+            headers=headers,
+            json=json_data,
+        )
+        return response
+    except Exception as e:
+        print("Unable to generate ChatCompletion response")
+        print(f"Exception: {e}")
+        return e
 
-
-def run_conversation():
-    # Step 1: send the conversation and available functions to GPT
-    messages = [{"role": "user", "content": "What's the weather like in Boston?"}]
-    functions = [
-        {
-            "name": "get_current_weather",
-            "description": "Get the current weather in a given location",
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "fn_set_class",
+            "description": "set the class in '브랜드', '품목', '상품명', '특성', '기타'",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "location": {
+                    "class_name": {
                         "type": "string",
-                        "description": "The city and state, e.g. San Francisco, CA",
+                        "description": "proper class in '브랜드', '품목', '상품명', '특성', '기타'",
                     },
-                    "unit": {"type": "string", "enum": ["celsius", "fahrenheit"]},
                 },
-                "required": ["location"],
+                "required": ["class_name"],
             },
         }
-    ]
-    API_KEY = "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"
-    openai.api_key = API_KEY
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo-0613",
-        messages=messages,
-        functions=functions,
-        function_call="auto",  # auto is default, but we'll be explicit
+    },
+]
+
+while True:
+    messages = []
+    word = input("단어 : ")
+    messages.append({"role": "system", "content": "Don't make assumptions about what values to plug into functions. Ask for clarification if a user request is ambiguous."})
+    messages.append({"role": "user", "content": "Please classify the input word into the most appropriate category among Brand, Item, Feature, or Product Name.\nINPUT : "})
+    messages.append({"role": "user", "content": word})
+    chat_response = chat_completion_request(
+        messages, tools=tools, tool_choice={"type": "function", "function": {"name": "fn_set_class"}}
     )
-    response_message = response["choices"][0]["message"]
-
-    # Step 2: check if GPT wanted to call a function
-    if response_message.get("function_call"):
-        # Step 3: call the function
-        # Note: the JSON response may not always be valid; be sure to handle errors
-        available_functions = {
-            "get_current_weather": get_current_weather,
-        }  # only one function in this example, but you can have multiple
-        function_name = response_message["function_call"]["name"]
-        fuction_to_call = available_functions[function_name]
-        function_args = json.loads(response_message["function_call"]["arguments"])
-        function_response = fuction_to_call(
-            location=function_args.get("location"),
-            unit=function_args.get("unit"),
-        )
-
-        # Step 4: send the info on the function call and function response to GPT
-        messages.append(response_message)  # extend conversation with assistant's reply
-        messages.append(
-            {
-                "role": "function",
-                "name": function_name,
-                "content": function_response,
-            }
-        )  # extend conversation with function response
-        second_response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo-0613",
-            messages=messages,
-        )  # get a new response from GPT where it can see the function response
-        return second_response
-
-
-print(run_conversation())
+    chat_response.json()["choices"][0]["message"]
+    #chat_response.json()
+    #print(chat_response.json())
+    print(json.loads(chat_response.json()["choices"][0]["message"]["tool_calls"][0]["function"]["arguments"])["class_name"])

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시판 예시</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 50px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background-color: #f5f5f5; padding: 10px; text-align: left; }
+        td { padding: 10px; text-align: left; border-top: 1px solid #ccc; }
+        .no-img { width: 50px; height: 50px; background-color: #ddd; text-align: center; line-height: 50px; display: inline-block; margin-right: 10px; }
+        .badge { display: inline-block; background-color: #fdd835; color: white; padding: 2px 10px; border-radius: 20px; font-size: 0.8em; }
+        .comments { color: gray; margin-left: 10px; font-size: 0.9em; }
+        .title-content { display: flex; align-items: center; }
+    </style>
+</head>
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th>번호</th>
+                <th>글쓴이</th>
+                <th>제목</th>
+                <th>댓글수</th>
+                <th>날짜</th>
+                <th>조회</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>486792</td>
+                <td>사용자명</td>
+                <td class="title-content">
+                    <div class="no-img">NO</div>
+                    <span><span class="badge">HOT</span> 게시글 제목 예시</span>
+                </td>
+                <td>127 <span class="comments">댓글</span></td>
+                <td>2023/10/10</td>
+                <td>18353</td>
+            </tr>
+            <!-- 다른 게시물도 이런식으로 추가하면 됩니다. -->
+        </tbody>
+    </table>
+</body>
+</html>

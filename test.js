@@ -1,48 +1,40 @@
-let xhr = new XMLHttpRequest();
-let clickTimeout;
-let checkTime = 0.001;
-let contents = [];
-let recentStaff = '';
-let recentCustomer = '';
-let menuData;
+const API_KEY = "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"
+const CONFIG = { headers: { Authorization: `Bearer ${API_KEY}`, "Content-Type": "application/json", }, };
+const CHECK_TIME = 0.001;
+const GPT_MODEL = "gpt-4-0613"
+const URL = "https://api.openai.com/v1/chat/completions"
+let data = { model: GPT_MODEL, messages: '' };
 let isAddBadge = false;
-let menuList;
+
 let askContent;
 let sizeList = ["톨", "그란데", "벤티"]
 let payMethodList = ["카카오페이", "카드", "현금", "네이버페이"]
 let hereOrTogo = ["for here", "to go"]
 let deciList = [];
 
-let API_KEY = "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"
-
-let config = { headers: { Authorization: `Bearer ${API_KEY}`, "Content-Type": "application/json", }, };
-let data = { model: "gpt-4-0613", messages: '' };
 let maxId = 1;
-let orderdata = {};
+let orderData = {};
 
-function set_menu_order(id, menu, size, option) {
-    if (id == '0'){
+function setMenuOrder(id, menu, size, option) {
+    if (id == '0') {
         id = String(maxId);
         maxId = maxId + 1;
     }
-    if (!orderdata[id]) {
-        orderdata[id] = {};
+    if (!orderData[id]) {
+        orderData[id] = {};
     }
-    orderdata[id]["menu"] = "아이스 아메리카노";
-    orderdata[id]["menu"] = menu;
-    orderdata[id]["size"] = size;
-    orderdata[id]["option"] = option;
-
-    console.log("주문내역 : ", menu, size, option);
+    orderData[id]["menu"] = menu;
+    orderData[id]["size"] = size;
+    orderData[id]["option"] = option;
 }
 
-function get_menu_order() {
-    return orderdata
+function getMenuOrder() {
+    return orderData
 }
 
-async function postAxios(data, config) {
+async function postAxios(data, CONFIG) {
     try {
-        const response = await axios.post("https://api.openai.com/v1/chat/completions", data, config);
+        const response = await axios.post(URL, data, CONFIG);
         return response;
     } catch (error) {
         console.error("Error in postAxios:", error);
@@ -50,10 +42,10 @@ async function postAxios(data, config) {
     }
 }
 
-async function gptFnCall(keyword) {
+async function gptFnCall(conversation) {
     let functions = [
         {
-            "name": "set_menu_order",
+            "name": "setMenuOrder",
             "description": "만약 고객이 메뉴를 주문한다면, 해당 함수를 호출한다.",
             "parameters": {
                 "type": "object",
@@ -80,7 +72,7 @@ async function gptFnCall(keyword) {
             },
         },
         {
-            "name": "get_menu_order",
+            "name": "getMenuOrder",
             "description": "이때까지 주문된 메뉴목록을 조회할 수 있다.",
             "parameters": {
                 "type": "object",
@@ -88,38 +80,76 @@ async function gptFnCall(keyword) {
                 "required": [],
             },
         }
-
     ]
 
-    messages = [{ "role": "user", "content": keyword }];
+    messages = [{ "role": "user", "content": conversation }];
     data.messages = messages
     data.functions = functions
     data.function_call = "auto"
-    return await postAxios(data, config)
+
+    return await postAxios(data, CONFIG)
 }
 
-async function search(keyword) {
-    response = await gptFnCall(keyword);
+async function search(conversation) {
+    response = await gptFnCall(conversation);
     response_message = response.data.choices[0].message
 
-    if (response_message.function_call.name == "get_menu_order") {
-        keyword = "대화내용 : " + keyword;
-        keyword += "\n get_menu_order() return value : " + JSON.stringify(get_menu_order())
-        search(keyword)
+    if (response_message.function_call.name == "getMenuOrder") {
+        conversation = "대화내용 : " + conversation;
+        conversation += "\n getMenuOrder() return value : " + JSON.stringify(getMenuOrder())
+        search(conversation)
     }
+    if (response_message.function_call == "setMenuOrder") {
+        let args = JSON.parse(response_message.function_call.arguments);
+        console.log(args)
+        console.log(setMenuOrder(args.id, args.menu, args.size, args.option));
+        //return setMenuOrder(args.menu, args.size, args.option);
+    }
+
     else {
-        if (response_message.function_call) {
-            let args = JSON.parse(response_message.function_call.arguments);
-            console.log(args)
-            console.log(set_menu_order(args.id, args.menu, args.size, args.option));
-            //return set_menu_order(args.menu, args.size, args.option);
-        } else {
-            console.log(response_message.content);
-            //return response_message.content
-        }
+        console.log(response_message.content);
+        //return response_message.content
     }
 }
 
 
+function initPage() {
+    deciList = [];
+    $("#chat-messages").empty();
+    $("#chat-header").empty();
+    $("#console").empty();
+    $("#chat-header").append('<h2>키오스크챗</h2><div class ="badge-area"></div><div><button id="refresh-button"><i class="bi bi-arrow-clockwise"></i></button> <div class="status-circle green" id = "light"></div></div>');
+    contents = [];
+    var recentStaff = "직원 : 안녕하세요. RI카페입니다. 무엇을 도와 드릴까요?";
+    var recentCustomer = '';
+    $("#chat-messages").append(recentStaff); // 메세지 채팅창에 보이기
+    $("#refresh-button").click(function () {
+        initPage();
+    });
+};
 
+$("#message-input").keypress(function (e) {
+    if (e.which === 13) {
+        $("#send-button").click();
+        return false;
+    }
+});
 
+$("#send-button").click(function () {
+    $("#console").empty();
+    let message = $("#message-input").val();
+    CustomerMsgForView = "손님 : " + message;
+    recentCustomer += "손님 : " + message;
+    if (message.trim() !== "") {
+        clearTimeout(clickTimeout); // 클릭 타이머 초기화
+        let messageElement = $("<div>").text(CustomerMsgForView); // 메세지 채팅창에 보이기
+        $("#chat-messages").append(messageElement); // 메세지 채팅창에 보이기
+        $("#chat-messages").scrollTop($("#chat-messages")[0].scrollHeight);
+        $("#message-input").val(""); // 메세지 input창 clear
+        clickTimeout = setTimeout(search(), CHECKTIME * 1); // CHECKTIME 초동안 입력없으면 API 호출
+    }
+});
+
+$(document).ready(function () {
+    initPage();
+});
